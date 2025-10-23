@@ -28,6 +28,7 @@ spec:
       - CreateNamespace=true
       - PrunePropagationPolicy=foreground
       - PruneLast=true
+      - ServerSideApply=true  # Required for large CRDs
     retry:
       limit: 5
       backoff:
