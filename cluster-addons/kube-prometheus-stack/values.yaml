@@ -64,10 +64,9 @@ kube-prometheus-stack:
       annotations:
         nginx.ingress.kubernetes.io/rewrite-target: /
       hosts:
-        - host: grafana.dev.local
-          paths:
-            - path: /
-              pathType: Prefix
+        - grafana.dev.local
+      path: /
+      pathType: Prefix
       tls: []
     
     # Grafana configuration
