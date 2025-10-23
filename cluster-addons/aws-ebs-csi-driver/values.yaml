@@ -18,8 +18,7 @@ aws-ebs-csi-driver:
       create: true
       name: ebs-csi-controller-sa
       annotations:
-        # Add your IAM role ARN here if using IRSA
-        # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/EBS_CSI_DriverRole
+        eks.amazonaws.com/role-arn: arn:aws:iam::753939038916:role/bg-eks-dev-ebs-csi-driver-role
   
   # Node configuration
   node:
