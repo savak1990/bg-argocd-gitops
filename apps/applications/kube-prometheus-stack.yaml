@@ -1,21 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metrics-server
+  name: kube-prometheus-stack
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   project: cluster-addons
   
   source:
     repoURL: https://github.com/savak1990/bg-argocd-gitops.git
     targetRevision: HEAD
-    path: cluster-addons/metrics-server
+    path: cluster-addons/kube-prometheus-stack
   
   destination:
     server: https://kubernetes.default.svc
-    namespace: kube-system
+    namespace: monitoring
   
   syncPolicy:
     automated:
@@ -23,7 +25,7 @@ spec:
       selfHeal: true
       allowEmpty: false
     syncOptions:
-      - CreateNamespace=false  # kube-system already exists
+      - CreateNamespace=true
       - PrunePropagationPolicy=foreground
       - PruneLast=true
     retry:
