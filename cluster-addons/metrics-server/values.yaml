@@ -73,7 +73,8 @@ metrics-server:
   priorityClassName: system-cluster-critical
 
   # Host network (disabled for security)
-  hostNetwork: false
+  hostNetwork:
+    enabled: false
 
   # Service account
   serviceAccount:
