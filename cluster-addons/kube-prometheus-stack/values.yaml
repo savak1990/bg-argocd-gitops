@@ -8,7 +8,7 @@ kube-prometheus-stack:
       storageSpec:
         volumeClaimTemplate:
           spec:
-            storageClassName: standard
+            storageClassName: gp3  # EKS storage class
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:
@@ -40,7 +40,7 @@ kube-prometheus-stack:
     # Grafana storage
     persistence:
       enabled: true
-      storageClassName: standard
+      storageClassName: gp3  # EKS storage class
       size: 1Gi
     
     # Resource limits (development-sized)
@@ -87,7 +87,7 @@ kube-prometheus-stack:
       storage:
         volumeClaimTemplate:
           spec:
-            storageClassName: standard
+            storageClassName: gp3  # EKS storage class
             accessModes: ["ReadWriteOnce"]
             resources:
               requests:
