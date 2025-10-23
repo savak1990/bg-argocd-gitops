@@ -1,4 +1,4 @@
-# metrics-server configuration for development
+# metrics-server configuration for EKS
 
 metrics-server:
   # Resource configuration
@@ -10,67 +10,16 @@ metrics-server:
       cpu: 200m
       memory: 400Mi
 
-  # Additional arguments for development environments
+  # Additional arguments for EKS
   args:
-    - --cert-dir=/tmp
-    - --secure-port=4443
-    - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-    - --kubelet-use-node-status-port
-    - --metric-resolution=15s
-    # For development environments with self-signed certificates
     - --kubelet-insecure-tls
+    - --kubelet-preferred-address-types=InternalIP
 
-  # Service configuration
-  service:
-    type: ClusterIP
-    port: 443
-    targetPort: 4443
-
-  # Security context
-  securityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 1000
-    seccompProfile:
-      type: RuntimeDefault
-    capabilities:
-      drop:
-        - ALL
-
-  # Container security context
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 1000
-    seccompProfile:
-      type: RuntimeDefault
-    capabilities:
-      drop:
-        - ALL
-
-  # Pod disruption budget for availability
-  podDisruptionBudget:
-    enabled: false  # Disabled for single-replica development setup
+  # Default service configuration (don't override ports)
+  # The chart will use the correct defaults
 
   # Replica count (single replica for development)
   replicas: 1
-
-  # Update strategy
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
-
-  # Node selection (optional)
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-
-  # Priority class (optional)
-  priorityClassName: system-cluster-critical
 
   # Host network (disabled for security)
   hostNetwork:
