@@ -8,30 +8,58 @@ This repository contains the GitOps configuration for the BoardGame Shop Kuberne
 .
 ├── README.md
 ├── cluster-addons/           # Infrastructure and cluster-level components
-│   └── kube-prometheus-stack/
+│   ├── aws-ebs-csi-driver/
+│   │   ├── Chart.yaml
+│   │   └── values.yaml
+│   ├── kube-prometheus-stack/
+│   │   ├── Chart.yaml
+│   │   └── values.yaml
+│   └── metrics-server/
 │       ├── Chart.yaml
 │       └── values.yaml
-└── applications/             # ArgoCD Application manifests
-    ├── cluster-addons/
-    │   ├── project.yaml
-    │   └── kube-prometheus-stack.yaml
-    └── boardgame-shop/       # Future application deployments
+└── apps/                     # ArgoCD Application manifests
+    ├── aws-ebs-csi-driver.yaml
+    ├── kube-prometheus-stack.yaml
+    └── applications/
+        └── metrics-server.yaml
 ```
 
 ## Directory Descriptions
 
 ### `cluster-addons/`
 Contains Helm charts and configurations for cluster-level infrastructure components:
+- **aws-ebs-csi-driver**: AWS EBS CSI driver for dynamic volume provisioning
 - **kube-prometheus-stack**: Complete monitoring stack with Prometheus, Grafana, and AlertManager
+- **metrics-server**: Kubernetes metrics server for `kubectl top` commands
 
-### `applications/`
-Contains ArgoCD Application and AppProject manifests that define how components are deployed:
-- **cluster-addons/**: Applications for infrastructure components
-- **boardgame-shop/**: Applications for the main BoardGame Shop services (future)
+### `apps/`
+Contains ArgoCD Application manifests that define how components are deployed:
+- Organized by sync-wave to ensure proper installation order
+- Each application references its corresponding Helm chart in `cluster-addons/`
 
 ## Current Components
 
-### Kube-Prometheus-Stack
+### AWS EBS CSI Driver (sync-wave: 0)
+The AWS EBS CSI driver enables dynamic provisioning of EBS volumes in EKS:
+- **Purpose**: Required for PersistentVolumeClaim provisioning using gp3 storage
+- **Storage Class**: Creates a default `gp3` storage class (encrypted, expandable)
+- **Namespace**: kube-system
+- **IRSA**: Requires IAM role for service account (configure in values.yaml)
+
+**Important**: You need to annotate the service account with your IAM role ARN:
+```yaml
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/EBS_CSI_DriverRole
+```
+
+### Metrics Server (sync-wave: 10)
+Kubernetes metrics server for resource monitoring:
+- **Purpose**: Enables `kubectl top nodes` and `kubectl top pods` commands
+- **Namespace**: kube-system
+- **Configuration**: Configured for EKS with insecure TLS
+
+### Kube-Prometheus-Stack (sync-wave: 10)
 A comprehensive monitoring solution that includes:
 - **Prometheus**: Metrics collection and storage (7 days retention, 5Gi storage)
 - **Grafana**: Visualization and dashboards with development-friendly access

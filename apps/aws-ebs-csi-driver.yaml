@@ -1,19 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metrics-server
+  name: aws-ebs-csi-driver
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-  annotations:
-    argocd.argoproj.io/sync-wave: "5"
 spec:
   project: cluster-addons
   
   source:
     repoURL: https://github.com/savak1990/bg-argocd-gitops.git
     targetRevision: HEAD
-    path: cluster-addons/metrics-server
+    path: cluster-addons/aws-ebs-csi-driver
+    helm:
+      valueFiles:
+        - values.yaml
   
   destination:
     server: https://kubernetes.default.svc
@@ -23,16 +26,12 @@ spec:
     automated:
       prune: true
       selfHeal: true
-      allowEmpty: false
     syncOptions:
-      - CreateNamespace=false  # kube-system already exists
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
+      - CreateNamespace=true
+      - ServerSideApply=true
     retry:
       limit: 5
       backoff:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  
-  revisionHistoryLimit: 3
