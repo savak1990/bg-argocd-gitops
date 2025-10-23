@@ -59,15 +59,7 @@ kube-prometheus-stack:
     
     # Ingress for easy access (optional)
     ingress:
-      enabled: true
-      ingressClassName: nginx
-      annotations:
-        nginx.ingress.kubernetes.io/rewrite-target: /
-      hosts:
-        - grafana.dev.local
-      path: /
-      pathType: Prefix
-      tls: []
+      enabled: false
     
     # Grafana configuration
     grafana.ini:
